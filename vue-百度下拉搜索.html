@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vu3</title>
+    <script src="js/vue1.0.js"></script>
+    <script src="js/vue-resource.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #box1{
+            width: 540px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .box2{
+            display: block;
+            width: 540px;
+            height: 33px;
+            margin-top: 30px;
+        }
+        .box3 li{
+            list-style: none;
+            width: 540px;
+            height: 30px;
+            margin-top: 5px;
+            line-height: 30px;
+        }
+        .box3{
+            width: 540px;
+        }
+        .grey{
+            background:grey;
+        }
+        .box4{
+            width: 540px;
+            height: 258px;
+            background: url("images/baidu.png");
+            margin: 0 auto;
+        }
+        #box1 .box3 p{
+            text-align: center;
+            font-size: 15px;
+            margin-top: 50px;
+        }
+    </style>
+    <script>
+    window.onload=function () {
+        new Vue({
+            el:"#box1",
+            data:{
+                mydata:[],
+                t1:"",
+                now:-1,
+            },
+            methods:{
+                get:function (ev) {
+                    if(ev.keyCode==38||ev.keyCode==40)return;
+                    if(ev.keyCode==13){window.open("https://www.baidu.com/s?wd="+this.t1);
+                    this.t1="",this.now=-1}
+                    this.$http.jsonp("https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su",
+                        {wd:this.t1},{jsonp:"cb"}).then(
+                        function (res) {
+                        this.mydata=res.data.s
+                    },
+                        function (res) {
+                    alert("您的请求出现错误")
+                    })
+                },
+                changedown:function () {
+                    this.now++;
+                    if(this.now==this.mydata.length)this.now=-1;
+                    this.t1=this.mydata[this.now]
+                },
+                changeup:function () {
+                    this.now--;
+                    if(this.now==-2)this.now=this.mydata.length-1;
+                },
+            }
+        })
+    }
+    </script>
+</head>
+<body>
+<div class="box4"></div>
+<div id="box1">
+    <input type="text" v-model="t1" @keyup="get($event)" class="box2"
+           @keydown.down="changedown()" @keydown.up.prevent="changeup()">
+    <div class="box3">
+        <ul>
+            <li v-for="value in mydata" :class="{grey:$index==now}">{{value}}</li>
+        </ul>
+        <p v-show="mydata.length==0">暂无数据...</p>
+    </div>
+
+</div>
+</body>
+</html>
